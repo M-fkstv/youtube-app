@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button } from '../Button/Button';
 import Logo from '../../assets/Logo.svg';
 
@@ -7,9 +7,11 @@ import { FiPlus } from 'react-icons/fi';
 import { IoMic } from 'react-icons/io5';
 import { VscBell } from 'react-icons/vsc';
 import { FaArrowLeft } from 'react-icons/fa6';
+import { SidebarContext } from '../../context/SidebarContext';
 
 export const Header = () => {
   const [formActive, setFormActive] = useState<boolean>(false);
+  const { toggle } = useContext(SidebarContext);
 
   function isScreenSmall() {
     return window.innerWidth < 640;
@@ -20,7 +22,7 @@ export const Header = () => {
       <div
         className={`flex items-center gap-2 shrink-0 ${formActive && 'hidden'}`}
       >
-        <Button variant='primary' icon={<CiMenuBurger />} />
+        <Button variant='primary' icon={<CiMenuBurger />} onClick={toggle} />
         <div>
           <a href='/'>
             <img src={Logo} alt='Your SVG' />
