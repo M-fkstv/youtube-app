@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 
 interface WindowSize {
-  windoWidth: number | undefined;
-  height: number | undefined;
+  windoWidth: number;
+  height: number;
 }
 
-// Создаем кастомный хук useWindowSize
 export const useWindowSize = (): WindowSize => {
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    windoWidth: undefined,
-    height: undefined,
+    windoWidth: Number.POSITIVE_INFINITY,
+    height: Number.POSITIVE_INFINITY,
   });
 
   const handleResize = () => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 import { Button } from '../Button/Button';
+import { Content } from '../Content/Content';
 
 type categoriesProps = {
   categories: string[];
@@ -49,7 +50,6 @@ export const Main = ({
     }
   };
 
-  // Обработчики перетаскивания
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setStartX(e.clientX);
@@ -60,12 +60,11 @@ export const Main = ({
     setIsDragging(false);
   };
 
-  // Добавляем обработчики событий при монтировании компонента
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
       const distanceMoved = e.clientX - startX;
-      const newTranslate = currentTranslate - distanceMoved; // Изменяем translate на основе перемещения мыши
+      const newTranslate = currentTranslate - distanceMoved;
 
       if (newTranslate >= 0 && newTranslate <= offset) {
         setTranslate(newTranslate);
@@ -82,16 +81,16 @@ export const Main = ({
   }, [currentTranslate, isDragging, offset, startX]);
 
   return (
-    <div
-      className='flex flex-col overflow-x-hidden pt-2 relative select-none'
-      ref={containerRef}
-      onMouseDown={handleMouseDown}
-    >
-      <div className='flex overflow-x-auto no-scrollbar'>
+    <main className='flex relative flex-col overflow-x-hidden gap-4 px-1 no-scrollbar-button md:px-6 select-none'>
+      {' '}
+      <div
+        onMouseDown={handleMouseDown}
+        className='flex sticky top-0 bg-white py-4 overflow-x-clip no-scrollbar'
+        ref={containerRef}
+      >
         {isLeftVisible && (
-          <div className='absolute  z-20 bg-gradient-to-r w-20 from-white from-50% to-transparent'>
+          <div className='absolute z-20 bg-gradient-to-r w-20 from-white from-50% to-transparent'>
             <Button
-              className=''
               variant='primary'
               onClick={scrollLeft}
               icon={<FaArrowLeft />}
@@ -99,7 +98,7 @@ export const Main = ({
           </div>
         )}
         {isRightVisible && (
-          <div className='absolute right-0 z-20 bg-gradient-to-l w-20 from-white from-50% to-transparent flex justify-end'>
+          <div className='absolute right-0 z-20 bg-gradient-to-l w-20 from-white from-50% to-transparent flex justify-end '>
             <Button
               variant='primary'
               onClick={scrollRight}
@@ -107,26 +106,25 @@ export const Main = ({
             />
           </div>
         )}
-
         <div
           ref={scrollRef}
           style={{
             transform: `translateX(-${translate}px)`,
           }}
-          className='flex gap-2 transition-transform w-[max-content]'
+          className='flex  gap-2 transition-transform w-[max-content]'
         >
           {categories.map((category) => (
             <Button
               variant={selectedCategory === category ? 'dark' : 'category'}
               key={category}
               text={category}
+              className=''
               onClick={() => onSelect(category)}
             />
           ))}
         </div>
       </div>
-
-      <main>content</main>
-    </div>
+      <Content></Content>
+    </main>
   );
 };

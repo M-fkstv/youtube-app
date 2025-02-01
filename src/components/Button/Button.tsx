@@ -28,7 +28,7 @@ export const Button = ({
       onClick={onClick}
       className={`${
         text ? ` gap-2 w-[max-content] p-4` : `w-10`
-      } h-10 ${style} ${className}  shrink-0 rounded-full flex items-center justify-center ${
+      } h-10 ${style} ${className} shrink-0 rounded-full flex items-center justify-center ${
         variant !== 'dark' ? `hover:bg-gray-200 ` : ''
       }`}
     >

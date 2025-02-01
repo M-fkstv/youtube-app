@@ -1,4 +1,5 @@
-import { ReactElement, createContext, useState } from 'react';
+import { ReactElement, createContext, useEffect, useState } from 'react';
+import { useWindowSize } from '../utils/useWindowSize';
 
 type SidebarProviderProps = {
   children: ReactElement;
@@ -25,6 +26,18 @@ export const SidebarContext = createContext<SidebarContextType>({
 export const SidebarProvider = ({ children }: SidebarProviderProps) => {
   const [isSmallOpen, setIsSmallOpen] = useState(false);
   const [isLargeOpen, setIsLargeOpen] = useState(true);
+
+  const { windoWidth } = useWindowSize();
+
+  useEffect(() => {
+    if (windoWidth < 768) {
+      setIsSmallOpen(true);
+      setIsLargeOpen(false);
+    } else {
+      setIsSmallOpen(false);
+      setIsLargeOpen(true);
+    }
+  }, [windoWidth]);
 
   function toggle() {
     setIsSmallOpen((open) => !open);

@@ -1,6 +1,5 @@
 import { ReactNode, useContext } from 'react';
 import { SidebarContext } from '../../context/SidebarContext';
-import { useWindowSize } from '../../utils/useWindowSize';
 
 import { BiSolidHome } from 'react-icons/bi';
 import { CgProfile } from 'react-icons/cg';
@@ -9,15 +8,12 @@ import { SiYoutubeshorts } from 'react-icons/si';
 
 export const Sidebar = () => {
   const { isSmallOpen, isLargeOpen } = useContext(SidebarContext);
-  const { windoWidth } = useWindowSize();
-
-  console.log('🚀 ~ Sidebar ~ width:', windoWidth);
 
   return (
     <>
       {isSmallOpen && (
         <aside
-          className={`sticky top-0 pt-2 overflow-y-auto no-scrollba flex flex-col  ${
+          className={`sticky top-0 pt-2 overflow-y-auto no-scrollbar flex flex-col  ${
             isLargeOpen ? 'lg:hidden' : 'lg:flex'
           }`}
         >
