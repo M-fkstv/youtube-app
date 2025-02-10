@@ -1,12 +1,19 @@
-import { useState } from 'react';
 import { Header } from './components/Header/Header';
 import { Main } from './components/Main/Main';
 import { Sidebar } from './components/Sidebar/Sidebar';
-import { categories } from './data';
 import { SidebarProvider } from './context/SidebarContext';
+import { useFetchCategories } from './utils/useFetchCategories';
+
+export interface Video {
+  id: string;
+  title: string;
+  thumbnail: string;
+}
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const { categories, selectedCategory, setSelectedCategory } =
+    useFetchCategories();
+
   return (
     <SidebarProvider>
       <div className='max-h-screen flex flex-col p-2'>
