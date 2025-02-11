@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { VideoItem, YouTubeApiResponse } from '../components/Content/Content';
+import { Video, YouTubeApiResponse } from '../components/Content/Content';
+
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 export const useFetchCategories = () => {
   const [categories, setCategories] = useState<string[]>(['Все']);
@@ -12,18 +14,15 @@ export const useFetchCategories = () => {
         'https://www.googleapis.com/youtube/v3/videoCategories',
         {
           params: {
-            part: 'snippet',
+            // part: 'snippet',
             regionCode: 'BY',
             hl: 'ru_RU',
-            key: 'AIzaSyA1nY0vpP24aEBhaiTIsnJDMnnt-FgZsuo',
+            key: API_KEY,
           },
         },
       );
-      const catId = response.data.items.map((item) => {
-        return item.id;
-      });
-      console.log('🚀 ~ fetchVideos ~ catId:', catId);
-      const categiriesData = response.data.items.map((item: VideoItem) => {
+
+      const categiriesData = response.data.items.map((item: Video) => {
         return item.snippet.title;
       });
 

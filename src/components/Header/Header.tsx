@@ -10,6 +10,8 @@ import { FaArrowLeft } from 'react-icons/fa6';
 import { SidebarContext } from '../../context/SidebarContext';
 import axios from 'axios';
 
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
 export const Header = () => {
   const [formActive, setFormActive] = useState<boolean>(false);
   const [q, setQ] = useState<string>('');
@@ -24,7 +26,10 @@ export const Header = () => {
     await axios
       .get(`https://www.googleapis.com/youtube/v3/search?q=${q}`, {
         params: {
-          key: 'AIzaSyA1nY0vpP24aEBhaiTIsnJDMnnt-FgZsuo',
+          part: 'snippet',
+          chart: 'mostPopular',
+          type: 'video',
+          key: API_KEY,
         },
       })
       .then(({ data }) => console.log(data.items));

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 export interface Thumbnail {
@@ -21,7 +21,7 @@ export interface Snippet {
 
 export interface VideoItem {
   id: string;
-  // etag: string;
+  etag: string;
   snippet: Snippet;
 }
 
@@ -30,6 +30,7 @@ export interface YouTubeApiResponse {
 }
 
 export interface Video {
+  etag: string;
   id: {
     kind: string;
     videoId: string;
@@ -38,6 +39,7 @@ export interface Video {
   // title: string;
   // thumbnail: string;
 }
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 export const Content = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -49,23 +51,30 @@ export const Content = () => {
     const fetchVideos = async () => {
       try {
         const response = await axios.get<YouTubeApiResponse>(
-          'https://www.googleapis.com/youtube/v3/search',
+          'https://www.googleapis.com/youtube/v3/videos',
+          // 'https://www.googleapis.com/youtube/v3/videoCategories',
 
           {
             params: {
-              part: 'snippet',
-              chart: 'mostPopular ',
+              part: 'snippet, contentDetails,statistics',
+              chart: 'mostPopular',
               type: 'video',
-              maxResults: 1,
+              maxResults: 10,
               hl: 'ru_RU',
               order: 'viewCount',
-              regionCode: 'Ru',
-              key: 'AIzaSyA1nY0vpP24aEBhaiTIsnJDMnnt-FgZsuo',
+              videoCategoryId: '28',
+              regionCode: 'RU',
+              key: API_KEY,
             },
           },
         );
 
+        const temp = response.data;
+
+        console.log(temp);
+
         const videosData = response.data.items.map((item: Video) => ({
+          etag: item.etag,
           id: item.id,
           title: item.snippet.title,
           thumbnail: item.snippet.thumbnails.high.url,
@@ -104,7 +113,7 @@ export const Content = () => {
             <img
               src={video.snippet.thumbnails.high.url}
               alt={video.snippet.title}
-              className={`w-full h-[${video.snippet.thumbnails.high.height}] object-cover rounded-md transition ease-in hover:rounded-none`}
+              className={`w-full h-[240px] object-cover rounded-md transition ease-in hover:rounded-none`}
             />
             {/* {hoveredVideoId === video.id.videoId ? (
               <iframe
