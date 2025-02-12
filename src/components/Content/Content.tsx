@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useGetVideosQuery } from '../../api/api';
 
 export interface Thumbnail {
   url: string;
@@ -31,109 +31,55 @@ export interface YouTubeApiResponse {
 
 export interface Video {
   etag: string;
-  id: {
-    kind: string;
-    videoId: string;
-  };
+  id: string;
   snippet: Snippet;
-  // title: string;
-  // thumbnail: string;
 }
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+// const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 export const Content = () => {
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState('');
   const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await axios.get<YouTubeApiResponse>(
-          'https://www.googleapis.com/youtube/v3/videos',
-          // 'https://www.googleapis.com/youtube/v3/videoCategories',
-
-          {
-            params: {
-              part: 'snippet, contentDetails,statistics',
-              chart: 'mostPopular',
-              type: 'video',
-              maxResults: 10,
-              hl: 'ru_RU',
-              order: 'viewCount',
-              videoCategoryId: '28',
-              regionCode: 'RU',
-              key: API_KEY,
-            },
-          },
-        );
-
-        const temp = response.data;
-
-        console.log(temp);
-
-        const videosData = response.data.items.map((item: Video) => ({
-          etag: item.etag,
-          id: item.id,
-          title: item.snippet.title,
-          thumbnail: item.snippet.thumbnails.high.url,
-          snippet: item.snippet,
-        }));
-
-        setVideos(videosData);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data.error.message);
-          // setError('Ошибка при загрузке видео');
-        } else if (err instanceof Error) {
-          console.log(err.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideos();
-  }, []);
+  const { data, error, isLoading } = useGetVideosQuery();
+  console.log('🚀 ~ Content ~ data:', data);
 
   return (
     <div className='grid gap-4  grid-cols-[repeat(auto-fill,minmax(340px,1fr))] '>
-      {loading && <p>Loading...</p>}
+      {isLoading && <p>Loading...</p>}
 
       {error && <p>{error}</p>}
-
-      {videos.map((video) => {
-        return (
-          <div
-            key={video.snippet.title}
-            onMouseEnter={() => setHoveredVideoId(video.id.videoId)}
-            onMouseLeave={() => setHoveredVideoId(null)}
-          >
-            <img
-              src={video.snippet.thumbnails.high.url}
-              alt={video.snippet.title}
-              className={`w-full h-[240px] object-cover rounded-md transition ease-in hover:rounded-none`}
-            />
-            {/* {hoveredVideoId === video.id.videoId ? (
-              <iframe
-                className='w-full h-[250px] delay-200'
-                src={`https://www.youtube.com/embed/${video.id.videoId}?autoplay=1&mute=1`}
-                title={video.snippet.title}
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                allowFullScreen
-              />
-            ) : (
+      {/* todo: error hangling rtk query ts */}
+      {data &&
+        data.items.map((video) => {
+          return (
+            <div
+              key={video.snippet.title}
+              onMouseEnter={() => setHoveredVideoId(video.id)}
+              onMouseLeave={() => setHoveredVideoId(null)}
+            >
               <img
                 src={video.snippet.thumbnails.high.url}
                 alt={video.snippet.title}
-                className='w-full h-[240px] object-cover rounded-md transition ease-in hover:rounded-none'
+                className={`w-full h-[240px] object-cover rounded-md transition ease-in hover:rounded-none`}
               />
-            )} */}
-            <p>{video.snippet.title}</p>
-          </div>
-        );
-      })}
+              {/* {hoveredVideoId === video.id ? (
+                <iframe
+                  className='w-full h-[250px] delay-200'
+                  src={`https://www.youtube.com/embed/${video.id}?autoplay=1&mute=1`}
+                  title={video.snippet.title}
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                  allowFullScreen
+                />
+              ) : (
+                <img
+                  src={video.snippet.thumbnails.high.url}
+                  alt={video.snippet.title}
+                  className='w-full h-[240px] object-cover rounded-md transition ease-in hover:rounded-none'
+                />
+              )} */}
+              <p>{video.snippet.title}</p>
+            </div>
+          );
+        })}
     </div>
   );
 };
