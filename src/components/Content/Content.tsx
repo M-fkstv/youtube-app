@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useGetVideosQuery } from '../../api/api';
+import { useGetVideosQuery } from '../../redux/api/api';
+import { useAppSelector } from '../../redux/utils';
 
 export interface Thumbnail {
   url: string;
@@ -34,13 +35,12 @@ export interface Video {
   id: string;
   snippet: Snippet;
 }
-// const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 export const Content = () => {
   const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
 
   const { data, error, isLoading } = useGetVideosQuery();
-  console.log('🚀 ~ Content ~ data:', data);
+  const loadedVideos = useAppSelector((state) => state.category);
 
   return (
     <div className='grid gap-4  grid-cols-[repeat(auto-fill,minmax(340px,1fr))] '>

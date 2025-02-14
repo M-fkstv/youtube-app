@@ -1,8 +1,9 @@
 import { Content } from '../Content/Content';
 import { Categories } from '../Categories/Categories';
+import { CategoryType } from '../../types/types';
 
 type categoriesProps = {
-  categories: string[];
+  categories: CategoryType[];
   selectedCategory: string;
   onSelect: (category: string) => void;
 };

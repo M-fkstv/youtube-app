@@ -1,38 +1,31 @@
 import { useContext, useState } from 'react';
-import { Button } from '../Button/Button';
 import Logo from '../../assets/Logo.svg';
+import { SidebarContext } from '../../context/SidebarContext';
+import { Button } from '../Button/Button';
 
 import { CiMenuBurger, CiSearch } from 'react-icons/ci';
+import { FaArrowLeft } from 'react-icons/fa6';
 import { FiPlus } from 'react-icons/fi';
 import { IoMic } from 'react-icons/io5';
 import { VscBell } from 'react-icons/vsc';
-import { FaArrowLeft } from 'react-icons/fa6';
-import { SidebarContext } from '../../context/SidebarContext';
-import axios from 'axios';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+import { useLazySearchVideoQuery } from '../../redux/api/searchApi';
 
 export const Header = () => {
   const [formActive, setFormActive] = useState<boolean>(false);
   const [q, setQ] = useState<string>('');
   const { toggle } = useContext(SidebarContext);
 
+  const [trigger, result, lastPromiseInfo] = useLazySearchVideoQuery();
+
   function isScreenSmall() {
     return window.innerWidth < 640;
   }
 
-  const load = async (event: React.FormEvent<HTMLFormElement>) => {
+  const load = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await axios
-      .get(`https://www.googleapis.com/youtube/v3/search?q=${q}`, {
-        params: {
-          part: 'snippet',
-          chart: 'mostPopular',
-          type: 'video',
-          key: API_KEY,
-        },
-      })
-      .then(({ data }) => console.log(data.items));
+    trigger(q);
+    setQ('');
   };
 
   return (
@@ -66,8 +59,9 @@ export const Header = () => {
               setQ(e.currentTarget.value);
             }}
             type='text'
+            value={q}
             placeholder='Введите запрос'
-            className=' w-full rounded-l-full pl-4 text-lg border border-r-1 focus:border-blue-500 border-gray-300 outline-none shadow-inner '
+            className='w-full rounded-l-full pl-4 text-lg border border-r-1 focus:border-blue-500 border-gray-300 outline-none shadow-inner '
           />
           <Button
             variant='secondary'

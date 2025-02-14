@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 
 import { Button } from '../Button/Button';
+import { useLazySearchVideoByCategoryQuery } from '../../redux/api/searchApi';
+import { CategoryType } from '../../types/types';
 
 const TRANSLATE_AMOUNT = 200;
 
 type categoriesProps = {
-  categories: string[];
+  categories: CategoryType[];
   selectedCategory: string;
   onSelect: (category: string) => void;
 };
@@ -17,10 +19,12 @@ export const Categories = ({
   selectedCategory,
 }: categoriesProps) => {
   const [translate, setTranslate] = useState(0);
-  const [isLeftVisible, setIsLeftVisible] = useState(true);
-  const [isRightVisible, setIsRightVisible] = useState(false);
+  const [isLeftVisible, setIsLeftVisible] = useState(false);
+  const [isRightVisible, setIsRightVisible] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [trigger] = useLazySearchVideoByCategoryQuery();
 
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -32,14 +36,19 @@ export const Categories = ({
 
   useEffect(() => {
     setIsLeftVisible(translate > 0);
-    setIsRightVisible(translate < offset);
+    setIsRightVisible(translate <= offset);
   }, [offset, translate]);
+
+  const setCategory = (category: CategoryType) => {
+    onSelect(category.title);
+    trigger(category.id);
+  };
 
   const scrollRight = () => {
     if (translate + TRANSLATE_AMOUNT <= offset) {
       setTranslate((prev) => prev + TRANSLATE_AMOUNT);
     } else {
-      setTranslate(offset);
+      setTranslate(offset + 1);
     }
   };
 
@@ -80,6 +89,7 @@ export const Categories = ({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [currentTranslate, isDragging, offset, startX]);
+
   return (
     <div
       onMouseDown={handleMouseDown}
@@ -111,15 +121,18 @@ export const Categories = ({
         }}
         className='flex  gap-2 transition-transform w-[max-content]'
       >
-        {categories.map((category) => (
-          <Button
-            variant={selectedCategory === category ? 'dark' : 'category'}
-            key={category}
-            text={category}
-            className=''
-            onClick={() => onSelect(category)}
-          />
-        ))}
+        {categories &&
+          categories.map((category) => (
+            <Button
+              variant={
+                selectedCategory === category.title ? 'dark' : 'category'
+              }
+              key={category.id}
+              text={category.title}
+              className=''
+              onClick={() => setCategory(category)}
+            />
+          ))}
       </div>
     </div>
   );

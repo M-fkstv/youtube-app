@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { YouTubeApiResponse } from '../components/Content/Content';
+import { YouTubeApiResponse } from '../../components/Content/Content';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
@@ -29,3 +29,4 @@ export const videoApi = createApi({
 });
 
 export const { useGetVideosQuery } = videoApi;
+
